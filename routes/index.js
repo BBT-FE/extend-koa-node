@@ -1,14 +1,17 @@
-
+// 使用koa-router middleware
 const router = require('koa-router')()
 
+// 获取对应的service层
 const services = {
   admin: require('../services/AdminService'),
 }
 // 配置所有的routes文件
 const routes = (config => {
 	return config.reduce((copy, name) => {
-    const obj = require(`./${name}`)
+    const obj = require(`./${name}`) // 获取对应个单个文件  admin.js etc..
     const newArr = Object.keys(obj).reduce((total, each) => {
+      // 配置path,method etc..
+      // {  path: '/api/admin/list', method: post, action: list, server: 'admin' }
       let item = { path: `/api/${name.toLowerCase()}/${each}`, method: obj[each].method, action: each, service: name }
       total.push(item)
       return total

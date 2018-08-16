@@ -1,10 +1,19 @@
+// 成功返回
 const success = (result) => {
   return {
     retCode: 200,
     retValue: result
   }
 }
+// 成功没数据返回
+const successWithCode = msg => {
+  return {
+    retCode: 200,
+    msg,
+  }
+}
 
+// 失败返回
 const failed = (error) => {
   console.log(error)
   return {
@@ -13,12 +22,6 @@ const failed = (error) => {
   }
 }
 
-const successWithCode = msg => {
-  return {
-    retCode: 200,
-    msg,
-  }
-}
 
 
 module.exports = {

@@ -4,8 +4,6 @@ var bodyParser = require('koa-bodyparser');
 var session = require('koa-session-minimal');
 var MysqlStore = require('koa-mysql-session');
 var config = require('./config/default.js');
-// var router=require('koa-router')
-// var views = require('koa-views')
 var koaStatic = require('koa-static')
 var app=new Koa()
 const routers = require('./routes/index')
@@ -40,21 +38,11 @@ app.use(koaStatic(
   path.join(__dirname , './public')
 ))
 
-// // 配置服务端模板渲染引擎中间件
-// app.use(views(path.join(__dirname, './views'), {
-//   extension: 'ejs'
-// }))
-
 // 使用表单解析中间件
 app.use(bodyParser())
 
 // 使用新建的路由文件
-// app.use(require('./routers/signin.js').routes())
 app.use(routers.routes()).use(routers.allowedMethods())
-
-// app.use(require('./routers/user').routes())
-// app.use(require('./routers/posts.js').routes())
-// app.use(require('./routers/signout.js').routes())
 
 // 监听在1200
 app.listen(config.port)

@@ -1,13 +1,7 @@
-const {
-  pojo,
-  filterUnderLine,
-} = require('../helper')
-const {
-  success,
-  failed,
-  successWithCode
-} = pojo
+const { pojo,filterUnderLine,} = require('../helper') // 获取辅助类里面的一些方法
+const { success, failed, successWithCode } = pojo // 获取消息集里的一些辅助方法
 
+// 需要绑定this的方法
 const funcs = [
   'list',
   'insert',
@@ -15,37 +9,46 @@ const funcs = [
   'delete',
 ]
 class BaseService {
-  constructor({
-    controller,
-  }) {
-    this.controller = controller
+  constructor() {
+    this.controller = null;
+    // 循环遍历绑定this
     funcs.forEach(item => {
       this[item] = this[item].bind(this)
     })
-    // this.list = this.list.bind(this);
-    // this.insert = this.insert.bind(this);
-    // this.update = this.update.bind(this);
-    // this.delete = this.delete.bind(this);
 
   }
 
+  // 查询方法
   async list(ctx) {
+    // controller返回的是一个对象，success(成功为true， 失败为false), data(成功则有此数据), err(失败则有此对象)
     const { success: flag, data, err } = await this.controller.list()
     if (flag) {
-      ctx.body = success(data.map(item => filterUnderLine(item)))
+      // success 为pojo消息集的成功返回
+      ctx.body = success(
+        data.map(item => 
+          //  筛选下划线属性，返回驼峰
+          filterUnderLine(item)
+        )
+      )
     } else {
+      // failed 为pojo消息集的失败返回，下同
       ctx.body = failed(err)
     }
   }
+  // 插入方法
   async insert(ctx) {
     const { row } = ctx.request.body
     const { success, err } = await this.controller.insert(row)
     if (success) {
-      ctx.body = successWithCode('添加成功')
+      // successWithCode 为没有数据返回时的成功返回
+      ctx.body = successWithCode('添加成功') // 没有数据则返回
     } else {
+      // 同上
       ctx.body = failed(err)
     }
   }
+  // 更新方法
+  // 同上
   async update(ctx) {
     const { row } = ctx.request.body
     const { success, err } = await this.controller.update(row)
@@ -55,6 +58,8 @@ class BaseService {
       ctx.body = failed(err)
     }
   }
+  // 删除方法
+  // 同上
   async delete(ctx) {
     const { row } = ctx.request.body
     const { success, err } = await this.controller.delete(row)
@@ -67,56 +72,3 @@ class BaseService {
 }
 
 module.exports = BaseService
-
-// /**
-//  * 
-//  * @param {*} config  对应的方法，要定义的哪几个方法模块，单个services层传入
-//  * @param {*} file 对应的controller文件名称
-//  * @return 返回一个对应好的对象
-//  */
-// module.exports = (config, file) => {
-//   const controller = require(`../../controller/${file}`)
-// 	return config.reduce((copy, name) => {
-//     copy[name] = async ctx => {
-//       let res;
-//       try {
-//         const val = ctx.request.body
-//         await controller[name](val).then(result => {
-//           // 没有数据返回的接口直接返回msg和code
-//           if (list.indexOf(name) !== -1) {
-//             res = successWithCode('操作成功')
-//             return
-//           }
-//           // 其他模块方法直接过滤数据下划线
-//           const arr = result.map(item => filterUnderLine(item))
-//           res = success(arr)
-//         })
-//       } catch(err) {
-//         res = failed(err)
-//       }
-//       ctx.body = res
-//     }
-// 	  return copy
-// 	}, {})
-// }
-
-// const { now } = this.app.mysql.literals;
-// newItem.gmt_modified = now;
-// newItem.gmt_create = now;
-// newItem.creator = this.ctx.user.name;
-// newItem.lastModifier = this.ctx.user.name;
-// console.log(this.table, newItem);
-// const dbResult = yield this.app.mysql.insert(this.table, newItem);
-// if (dbResult.message || dbResult.affectedRows !== 1) {
-//   return {
-//     success: false,
-//     msg: dbResult.message,
-//   };
-
-// }
-// return {
-//   success: true,
-//   data: {
-//     id: dbResult.insertId,
-//   },
-// };

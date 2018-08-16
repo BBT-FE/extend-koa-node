@@ -1,5 +1,4 @@
 module.exports = {
-  DEL: 404,
-  ABA: 111,
-  NORMAL: 0,
+  MANAGER: 999, // 管理员
+  USER: 0, // 用户
 }
