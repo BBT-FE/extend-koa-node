@@ -11,89 +11,46 @@ class BaseController {
     this.table = ''
   }
 
-  list() {
-    return new Promise((resolve, reject) => {
-      try {
-        const sql = `select * from ${this.table} where status != ?`
-        const result = query(sql, [STATUS.DELED])
-        resolve(result)
-      } catch (err) {
-        this.log('list', err)
-        reject(err)
-      }
-    })
+  async list() {
+    const sql = `select * from ${this.table} where status != ?`
+    return await query(sql, [STATUS.DELED])
   }
 
-  insert(row) {
-    return new Promise((resolve, reject) => {
-      try {
-        const {
-          keys,
-          vals
-        } = filterCamel(row)
-        const names = keys.join(',')
-        const questions = keys.map(item => '?').join(',')
-        const sql = `insert into ${this.table}(${names},create_time,status) values(${questions},now(),?)`
-        const result = query(sql, [...vals, STATUS.NORMAL])
-        resolve(result)
-      } catch (err) {
-        this.log('insert', err)
-        reject(err)
-      }
-    })
-
+  async insert(row) {
+    const {
+      keys,
+      vals
+    } = filterCamel(row)
+    const names = keys.join(',')
+    const questions = keys.map(item => '?').join(',')
+    const sql = `insert into ${this.table}(${names},create_time,status) values(${questions},now(),?)`
+    return await query(sql, [...vals, STATUS.NORMAL])
   }
 
-  update(row) {
-    return new Promise((resolve, reject) => {
-      try {
-        const {
-          id,
-        } = row
-        delete row.id
-        let _sql = `update ${this.table} set `
-        const {
-          sql,
-          args
-        } = NtNUpdate(row, _sql)
-        _sql = sql + 'where id = ?'
-        const result = query(_sql, [...args, id])
-        resolve(result)
-      } catch (err) {
-        this.log('update', err)
-        reject(err)
-      }
-    })
-    
+  async update(row) {
+    const {
+      id,
+    } = row
+    delete row.id
+    let _sql = `update ${this.table} set `
+    const {
+      sql,
+      args
+    } = NtNUpdate(row, _sql)
+    _sql = sql + 'where id = ?'
+    return await query(_sql, [...args, id])
   }
 
-  delete(row) {
-    return new Promise((resolve, reject) => {
-      try {
-        const {
-          id
-        } = row
-        const sql = `update ${this.table} set status = ? where id = ?`
-        const result = query(sql, [STATUS.DELED, id])
-        resolve(result)
-      } catch (err) {
-        this.log('delete', err)
-        reject(err)
-      }
-    })
-    
+  async delete(row) {
+    const {
+      id
+    } = row
+    const sql = `update ${this.table} set status = ? where id = ?`
+    return await query(sql, [STATUS.DELED, id])
   }
 
   excute(sql, vals) {
-    return new Promise((resolve, reject) => {
-      try {
-        const result = query(sql, vals)
-        resolve(result)
-      } catch(err) {
-        this.log('excute', err)
-        reject(err)
-      }
-    })
+    return await = query(sql, vals)
   }
   log({func, err}) {
     console.log(`excute function[${func}] occured error : ${err.message || err}`)

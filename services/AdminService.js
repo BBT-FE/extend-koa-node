@@ -9,4 +9,4 @@ class AdminService extends BaseService {
     })
   }
 }
-module.exports = AdminService
+module.exports = new AdminService()

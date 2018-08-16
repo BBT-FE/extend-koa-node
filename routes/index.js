@@ -2,7 +2,7 @@
 const router = require('koa-router')()
 
 const services = {
-  admin: new (require('../services/AdminService'))(),
+  admin: require('../services/AdminService'),
 }
 // 配置所有的routes文件
 const routes = (config => {
@@ -24,8 +24,6 @@ const routes = (config => {
 routes.forEach(item => {
   const { method, path, service: serviceName, action } = item
   const service = services[serviceName]
-  console.log(service)
-  console.log(service.list)
   router[method](path, service[action])
 })
 module.exports = router

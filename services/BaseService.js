@@ -8,46 +8,61 @@ const {
   successWithCode
 } = pojo
 
+const funcs = [
+  'list',
+  'insert',
+  'update',
+  'delete',
+]
 class BaseService {
   constructor({
     controller,
   }) {
     this.controller = controller
-    console.log(this.controller)
+    funcs.forEach(item => {
+      this[item] = this[item].bind(this)
+    })
+    // this.list = this.list.bind(this);
+    // this.insert = this.insert.bind(this);
+    // this.update = this.update.bind(this);
+    // this.delete = this.delete.bind(this);
+
   }
 
   async list(ctx) {
-    console.log(this)
-    await this.controller.list().then((res) => {
-      res = success(filterUnderLine(res[0]))
-      ctx.body = res
-    }).catch(err => {
+    const { success: flag, data, err } = await this.controller.list()
+    if (flag) {
+      ctx.body = success(data.map(item => filterUnderLine(item)))
+    } else {
       ctx.body = failed(err)
-    })
+    }
   }
   async insert(ctx) {
     const { row } = ctx.request.body
-    await this.controller.insert(row).then(result => {
+    const { success, err } = await this.controller.insert(row)
+    if (success) {
       ctx.body = successWithCode('添加成功')
-    }).catch(err => {
+    } else {
       ctx.body = failed(err)
-    })
+    }
   }
   async update(ctx) {
     const { row } = ctx.request.body
-    await this.controller.update(row).then(result => {
-      ctx.body = successWithCode('修改成功')
-    }).catch(err => {
+    const { success, err } = await this.controller.update(row)
+    if (success) {
+      ctx.body = successWithCode('添加成功')
+    } else {
       ctx.body = failed(err)
-    })
+    }
   }
   async delete(ctx) {
     const { row } = ctx.request.body
-    await this.controller.delete(row).then(result => {
-      ctx.body = successWithCode('删除成功')
-    }).catch(err => {
+    const { success, err } = await this.controller.delete(row)
+    if (success) {
+      ctx.body = successWithCode('添加成功')
+    } else {
       ctx.body = failed(err)
-    })
+    }
   }
 }
 
